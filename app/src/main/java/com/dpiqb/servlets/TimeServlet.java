@@ -15,10 +15,23 @@ public class TimeServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     resp.setContentType("text/html; charset=utf-8");
-    ZoneId zoneId = ZoneId.of("Z").normalized();
-    String currentUtc = ZonedDateTime.now(zoneId).format(DateTimeFormatter.ofPattern("Дата: yyyy.MM.dd, час: HH:mm:ss"));
+    req.setCharacterEncoding("UTF-8");
 
-    resp.getWriter().write("<h4>"+currentUtc+"</h4>");
+    ZoneId zoneId = null;
+
+    String timezone = req.getParameter("timezone");
+
+    if(timezone == null || timezone.equals("")){
+      zoneId = ZoneId.of("Z");
+    }else{
+      zoneId = ZoneId.of(timezone.replace(' ', '+'));
+    }
+
+    String currentUtc = ZonedDateTime.now(zoneId)
+      .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss O"))
+      .replace("GMT", "UTC");
+
+    resp.getWriter().write("<h4>" + currentUtc + "</h4>");
     resp.getWriter().close();
   }
 }

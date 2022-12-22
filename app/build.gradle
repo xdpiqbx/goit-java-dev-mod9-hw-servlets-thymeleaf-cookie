@@ -19,24 +19,11 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit Jupiter for testing.
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
-
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:31.1-jre'
 
     // https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
-}
-
-application {
-    // Define the main class for the application.
-    mainClass = 'com.dpiqb.App'
-}
-
-tasks.named('test') {
-    // Use JUnit Platform for unit tests.
-    useJUnitPlatform()
 }
 
 compileJava {
