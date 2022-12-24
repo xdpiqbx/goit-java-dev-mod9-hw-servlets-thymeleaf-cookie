@@ -8,10 +8,13 @@ import org.thymeleaf.web.servlet.JavaxServletWebApplication;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -39,13 +42,28 @@ public class TimeServlet extends HttpServlet {
     resp.setContentType("text/html; charset=utf-8");
     req.setCharacterEncoding("UTF-8");
 
-    ZoneId zoneId = null;
+    ZoneId zoneId = ZoneId.of("Z");
 
     String timezone = req.getParameter("timezone");
 
+    // User did not send timezone
     if(timezone == null || timezone.equals("")){
-      zoneId = ZoneId.of("Z");
+      Cookie[] cookies = req.getCookies();
+      // Has no cookie, it is first visit
+      if(cookies != null){
+        // Timezone was NOT sended and cookies not null
+        // I try to find "timezone" cookie and set zoneId
+        for (Cookie cookie : cookies) {
+          if(cookie.getName().equals("timezone")){
+            zoneId = ZoneId.of(cookie.getValue());
+            break;
+          }
+        }
+      }
     }else{
+      // If user have send me "timezone" i will save it to cookie
+      Cookie timezoneCookie = new Cookie("timezone", URLEncoder.encode(timezone, StandardCharsets.UTF_8));
+      resp.addCookie(timezoneCookie);
       zoneId = ZoneId.of(timezone.replace(' ', '+'));
     }
 
